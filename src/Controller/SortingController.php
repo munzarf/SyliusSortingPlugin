@@ -106,11 +106,10 @@ class SortingController
 
 	public function savePositions(Request $request): RedirectResponse
 	{
-		$i = 0;
 		$taxon = null;
 
 		if ($request->request->get('id') !== null) {
-			foreach ($request->request->get('id') as $id) {
+			foreach ($request->request->get('id') as $i => $id) {
 				$productTaxon = $this->productTaxonRepository->find($id);
 				assert($productTaxon instanceof ProductTaxonInterface);
 				$productTaxon->setPosition($i);
@@ -119,11 +118,9 @@ class SortingController
 					$taxon = $productTaxon->getTaxon();
 				}
 
-				++$i;
+				$this->entityManager->flush();
 			}
 		}
-
-		$this->entityManager->flush();
 
 		if ($taxon !== null) {
 			$message = $this->translator->trans('mango-sylius.ui.sortingPlugin.successMessage');
